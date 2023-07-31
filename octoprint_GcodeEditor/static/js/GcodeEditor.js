@@ -17,6 +17,7 @@ $(function() {
         var _loadingFile = false;
         var _firstRun = true;
         var _selectedFilePath;
+        var _selectedFileName;
         self.files = null;
         self.title = ko.observable();
         self.gcodeTextArea = ko.observable();
@@ -63,13 +64,32 @@ $(function() {
         });
 
         self.saveGcode = ko.pureComputed(function() {
-            var gtext = self.gcodeTextArea();
+            if(!self.canSaveGcode()) return;
+
             var fName = self.destinationFilename();
+            if(fName != _selectedFileName) {
+                OctoPrint.files.exists("local", _selectedFilePath, fName)
+                .done(function(resp) {
+                    if(!resp.exists) {
+                        self.saveGcode_();
+                    } else {
+                        $('#gcode_edit_dialog_confirm').modal('show');
+                    }
+                });
+            } else {
+                self.saveGcode_();
+            }
+        });
 
+        self.saveGcode_ = ko.pureComputed(function() {
+            if(!self.canSaveGcode()) return;
+
+            var fName = self.destinationFilename();
+            var gtext = self.gcodeTextArea();
             var file = new Blob([gtext], { type: "text/plain" });
-
             OctoPrint.files.upload("local", file, { filename: fName, path: _selectedFilePath });
-
+            
+            $('#gcode_edit_dialog_confirm').modal('hide');
             $('#gcode_edit_dialog').modal('hide');
         });
 
@@ -100,6 +120,7 @@ $(function() {
             } else {
                 _selectedFilePath = "";
             }
+            _selectedFileName = name;
 
             // Send request
             $.ajax({

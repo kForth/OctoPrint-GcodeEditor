@@ -29,15 +29,26 @@
     </div>
     <div class="modal-footer">
         <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Cancel') }}</a>
-        <a href="#" class="btn btn-primary" data-bind="click:
-            function() {
-                if ($root.canSaveGcode()) {
-                    $root.saveGcode()
-                }
-            },
+        <a href="#" class="btn btn-primary" data-bind="
+            click: $root.saveGcode,
             css: {disabled: !$root.canSaveGcode()},
             attr: {title: $root.saveGcodeButtonTooltip}"
         >{{ _('Save') }}</a>
+    </div>
+</div>
+
+<div id="gcode_edit_dialog_confirm" class="modal hide">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+        <h3>{{ _('File Already Exists!') }}</h3>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Cancel') }}</a>
+        <a href="#" class="btn btn-primary" data-bind="
+            click: $root.saveGcode_,
+            css: {disabled: !$root.canSaveGcode()},
+            attr: {title: $root.saveGcodeButtonTooltip}"
+        >{{ _('Overwrite') }}</a>
     </div>
 </div>
 
