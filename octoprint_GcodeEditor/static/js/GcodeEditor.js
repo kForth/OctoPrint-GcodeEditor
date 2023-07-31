@@ -63,8 +63,8 @@ $(function() {
         });
 
         self.saveGcode = ko.pureComputed(function() {
-            var fName = self._sanitize(self.destinationFilename());
             var gtext = self.gcodeTextArea();
+            var fName = self.destinationFilename();
 
             var file = new Blob([gtext], { type: "text/plain" });
 
@@ -339,11 +339,6 @@ $(function() {
             // Return encoded html
             return $("<div>").text(value).html().replace(/"/g, "&quot;").replace(/'/g, "&#39;").replace(/`/g, "&#96;");
         }
-
-        // https://github.com/foosel/OctoPrint/blob/master/src/octoprint/static/js/app/viewmodels/slicing.js#L294
-        self._sanitize = function(name) {
-            return name.replace(/[^a-zA-Z0-9\-_\.\(\) ]/g, "");
-        };
 
         self.onStartupComplete = function() {
             self.maxGcodeSize(bytesFromSize(self.settings.settings.plugins.GcodeEditor.maxGcodeSize()));
