@@ -24,44 +24,6 @@ $(function() {
         self.destinationFilename = ko.observable();
         self.maxGcodeSize = ko.observable();
         self.maxGcodeSizeMobile = ko.observable();
-        self.layerHeight = ko.observable();
-        self.gcodeHeight = ko.observable();
-        
-        self.cutGcode = ko.pureComputed(function() {
-            var gtext = self.gcodeTextArea();
-            var process = false;
-            var layerHeightP = self.settings.settings.plugins.GcodeEditor.layerHeight();
-            var gcodeHeightP = self.gcodeHeight();
-            var data = gtext.split('\n');
-            var height = 0;
-            const gtextcut = [];
-
-            if (gcodeHeightP <= layerHeightP) return;
-
-            for(let line of data) {
-                if (line[3] === 'Z') {
-                    let z = line.indexOf('Z');
-                    let f = line.indexOf('F');
-                    let speed = Number(line.slice(f+1,-1));
-                    height = Number(line.slice(z+1,f-1));
-                    line = "G1 Z" + (height-gcodeHeightP).toFixed(3) + " F" + speed.toFixed(3);
-                }
-                // In case of custom Z nozzle movements at the beginning, let's assume there is a comment at the end of the line
-                if (height > gcodeHeightP  && process === falsee && !(line.includes(';'))) {
-                    gtextcut.push("G28 X Y ; home X Y");
-                    gtextcut.push("G21 ; set units to millimeters");
-                    gtextcut.push("G90 ; use absolute coordinates");
-                    gtextcut.push("M83 ; use relative distances for extrusion");
-                    process = true;
-                }
-                if (process === true) {
-                    gtextcut.push(line);
-                } else if (line[0] !== 'G' && !(line.includes('M500'))) {
-                    gtextcut.push(line);
-                }
-            }
-            self.gcodeTextArea(gtextcut.join('\n'));
-        });
 
         self.saveGcode = ko.pureComputed(function() {
             if(!self.canSaveGcode()) return;
@@ -146,8 +108,6 @@ $(function() {
                 self.title(header);
 
                 self.destinationFilename(name);
-
-                self.gcodeHeight(0.0);
 
                 self.gcodeTextArea(data);
 
